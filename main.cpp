@@ -13,7 +13,7 @@ void test_rgb2gray() {
     int h, w, c;
 
     imread(path, &img, &h, &w, &c);
-    std::cout << "读取图片images/rgb2gray/input.jpg，高度为" << h << "，高度为" << w
+    std::cout << "读取图片images/rgb2gray/input.jpg,高度为" << h << "，高度为" << w
               << "，通道数为" << c
               << std::endl;
 
@@ -24,7 +24,7 @@ void test_rgb2gray() {
     imwrite(out_path, gray, h, w, 1);
     std::cout << "使用你的代码产生的灰度图片已经保存为images/rgb2gray/output.jpg"
               << std::endl
-              << "可以与images/rgb2gray/answer.jpg进行比较，看结果是否正确"
+              << "可以与images/rgb2gray/answer.jpg进行比较,看结果是否正确"
               << std::endl;
 
     free(gray), free(img);
@@ -108,7 +108,7 @@ void test_hist_eq() {
     int h, w, c;
 
     imread(path, &img, &h, &w, &c);
-    std::cout << "读取图片images/hist_eq/input.jpg，高度为" << h << "，高度为" << w
+    std::cout << "读取图片images/hist_eq/input.jpg,高度为" << h << "，高度为" << w
               << "，通道数为" << c
               << std::endl;
 

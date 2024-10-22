@@ -5,11 +5,12 @@ int my_strlen(char *str) {
     /**
      * 统计字符串的长度，太简单了。
      */
-
     // IMPLEMENT YOUR CODE HERE
-    return 0;
+    int length=0;
+    while(str[length]!='\0'){length++;}
+    return length;
 }
-
+      
 
 // 练习2，实现库函数strcat
 void my_strcat(char *str_1, char *str_2) {
@@ -17,7 +18,11 @@ void my_strcat(char *str_1, char *str_2) {
      * 将字符串str_2拼接到str_1之后，我们保证str_1指向的内存空间足够用于添加str_2。
      * 注意结束符'\0'的处理。
      */
-
+     char *tmp=str_1;
+    while(*str_1)
+    str_1++;
+    while((*str_1++ = *str_2++)!='\0');
+    return;
     // IMPLEMENT YOUR CODE HERE
 }
 
@@ -29,7 +34,20 @@ char* my_strstr(char *s, char *p) {
      * 例如：
      * s = "123456", p = "34"，应该返回指向字符'3'的指针。
      */
+     char *cp=(char*)s;
+     char*s1,*s2;
+     if(!*p)
+     return ((char*)s);//p是一个空字符串时直接返回s
+     while(*cp)
+     {
+      s1=cp;
+      s2=(char*)p;
+      while(*s2&&!(*s1-*s2))
+      s1++,s2++;
+      if(!*s2){return(cp);}
+      cp++;
 
+      }
     // IMPLEMENT YOUR CODE HERE
     return 0;
 }
@@ -94,8 +112,19 @@ void rgb2gray(float *in, float *out, int h, int w) {
      * (1) for循环的使用。
      * (2) 内存的访问。
      */
-
+     for (int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) {
+            int index=(w*i+j)*3;
+            float R=in[index];
+            float G=in[index+1];
+            float B=in[index+2];
+            float gray=0.1140 * B  + 0.5870 * G + 0.2989 * R;
+            out[i*w+j]=gray;
+     }
+    }
+    
     // IMPLEMENT YOUR CODE HERE
+
     // ...
 }
 
@@ -123,7 +152,7 @@ void resize(float *in, float *out, int h, int w, int c, float scale) {
      *      也就是说，v的值是 点1 和 点2 的值的加权平均值，权重与到两点的距离相关
      *      (公式中的 x也可以是 y，因为是在一条直线上)。
      *
-     *  2.双线性插值法
+     *  2.双线性插值法 
      *     2.1 由于图片是二维的，每个像素点有两个方向可以用来插值，所以可以使用双线性插值法。
      *     假设有四个已知 P1(x1, y2), P2(x2, y2), P3(x1, y1), P4(x2, y1)，
      *      如下图（看起来是在一条直线上就是在一条直线上）
@@ -198,7 +227,30 @@ void resize(float *in, float *out, int h, int w, int c, float scale) {
 
     int new_h = h * scale, new_w = w * scale;
     // IMPLEMENT YOUR CODE HERE
+    for (int y = 0; y < new_h; y++) {
+        for (int x = 0; x < new_w; x++){
+            int x0=x/scale;
+            int y0=y/scale;
+            int x1 = static_cast<int>(x0);
+            int y1 = static_cast<int>(y0);
+            float dx = x0 - x1;float dy = y0 - y1;
+            if(x1>=w-1)x1=w-2;
+            if(y1>=h-1)y1=h-2;
+            int index1=(y1*w+x1)*c;
+            int index2=(y1*w+x1+1)*c;
+            int index3=((y1+1)*w+x1)*c;
+            int index4=((y1+1)*w+x1+1)*c;
+            for (int channel = 0; channel < c; channel++) {
+                out[(y * new_w + x) * c + channel] =
+                    in[index1 + channel] * (1 - dx) * (1 - dy) + 
+                    in[index2 + channel] * dx * (1 - dy) +      
+                    in[index3 + channel] * (1 - dx) * dy +      
+                    in[index4 + channel] * dx * dy;              
+            }
 
+
+        }    
+    }
 }
 
 
@@ -219,6 +271,39 @@ void hist_eq(float *in, int h, int w) {
      * (2) 灰度级个数为256，也就是{0, 1, 2, 3, ..., 255}
      * (3) 使用数组来实现灰度级 => 灰度级的映射
      */
-
+  
     // IMPLEMENT YOUR CODE HERE
+int N = w * h; 
+float n[256] = {0};
+for (int i = 0; i < h; i++) {
+    for (int j = 0; j < w; j++) {
+        int index = i * w + j;
+        n[static_cast<int>(in[index])]++;
+    }
+}
+
+float pr[256] = {0}; 
+float s[256] = {0};
+for (int k = 0; k < 256; k++)
+    pr[k] = n[k] / N;
+
+for (int k = 0; k < 256; k++) {
+    for (int i = 0; i <= k; i++) {
+        s[k] += pr[i];
+    }
+}
+
+int S[256] = {0}; // 
+  for (int i = 0; i < 256; i++) {
+        S[i] = static_cast<int>(s[i] * 255 + 0.5); 
+         if (S[i] < 0) S[i] = 0;
+        if (S[i] > 255) S[i] = 255;
+    }
+
+for (int i = 0; i < h; i++) {
+    for (int j = 0; j < w; j++) {
+        int index = i * w + j;
+        in[index] = S[static_cast<int>(in[index])];
+    }
+}
 }
